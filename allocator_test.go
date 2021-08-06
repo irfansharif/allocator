@@ -28,7 +28,24 @@ func TestMultipleBuckets(t *testing.T) {
 
 	require.True(t, ok)
 	require.Len(t, placement, 30)
-	for item, bin := range placement {
-		t.Logf("placed %s in %s", item, bin)
+	counts := make(map[Bin]int)
+	for _, bin := range placement {
+		counts[bin] += 1
 	}
+
+	require.Len(t, counts, 5)
+	for _, count := range counts {
+		require.Equal(t, 6, count)
+	}
+}
+
+func TestChurn(t *testing.T) {
+	const items = 5
+	const bins = 3
+	a := NewAllocator(items, bins, 1)
+	// a.Options.DisableEvenDistribution = true // really slows things down otherwise, even when solvable
+
+	placement, ok := a.Allocate()
+	require.True(t, ok)
+	require.Len(t, placement, items)
 }
